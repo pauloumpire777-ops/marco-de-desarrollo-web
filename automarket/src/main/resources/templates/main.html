@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Panel principal')}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/layout :: navbar(${activo})}"></nav>
+<main class="container mt-5 mb-5 flex-grow-1">
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+    <div class="alert alert-warning" th:if="${param.denegado}">
+        RN-06: su rol no tiene permiso para ese módulo. Solo un Supervisor accede a Personal y Analítica.
+    </div>
+
+    <div class="mb-4">
+        <h1 class="fw-bold h2">Panel de Administración</h1>
+        <p class="text-muted">Hola, <span th:text="${usuarioActual.nombre}">usuario</span>. Seleccione un módulo para gestionar el minimarket.</p>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3"><div class="card p-3"><div class="text-muted small">Productos activos</div><div class="kpi-valor" th:text="${productosActivos}">0</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card p-3"><div class="text-muted small">Categorías activas</div><div class="kpi-valor" th:text="${categoriasActivas}">0</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card p-3"><div class="text-muted small">Con stock bajo (15 o menos)</div><div class="kpi-valor text-danger" th:text="${stockBajo}">0</div></div></div>
+        <div class="col-6 col-lg-3"><div class="card p-3"><div class="text-muted small">Ventas de esta sesión</div><div class="kpi-valor" th:text="${ventasRealizadas}">0</div></div></div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card card-hover text-center p-4 h-100">
+                <div class="icono-modulo mb-3">📦</div><h5 class="fw-bold">Inventario</h5>
+                <p class="text-muted small">Productos, precios y stock.</p>
+                <a th:href="@{/productos}" class="btn btn-outline-secondary w-100 mt-auto">Acceder</a>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card card-hover text-center p-4 h-100">
+                <div class="icono-modulo mb-3">🗂️</div><h5 class="fw-bold">Categorías</h5>
+                <p class="text-muted small">Organice el catálogo por familias.</p>
+                <a th:href="@{/categorias}" class="btn btn-outline-secondary w-100 mt-auto">Acceder</a>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card card-hover text-center p-4 h-100 border border-primary">
+                <div class="icono-modulo mb-3">🧾</div><h5 class="fw-bold">Autopago</h5>
+                <p class="text-muted small">Terminal de ventas para clientes.</p>
+                <a th:href="@{/caja}" class="btn btn-primary w-100 mt-auto">Abrir terminal</a>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4" th:if="${usuarioActual.supervisor}">
+            <div class="card card-hover text-center p-4 h-100">
+                <div class="icono-modulo mb-3">👥</div><h5 class="fw-bold">Personal</h5>
+                <p class="text-muted small">Colaboradores, roles y accesos.</p>
+                <a th:href="@{/usuarios}" class="btn btn-outline-secondary w-100 mt-auto">Acceder</a>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4" th:if="${usuarioActual.supervisor}">
+            <div class="card card-hover text-center p-4 h-100">
+                <div class="icono-modulo mb-3">📊</div><h5 class="fw-bold">Analítica</h5>
+                <p class="text-muted small">Rendimiento y reportes de ventas.</p>
+                <a th:href="@{/metricas}" class="btn btn-outline-secondary w-100 mt-auto">Ver reportes</a>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card card-hover text-center p-4 h-100">
+                <div class="icono-modulo mb-3">🏷️</div><h5 class="fw-bold">Promociones</h5>
+                <p class="text-muted small">Campañas activas en tienda.</p>
+                <a th:href="@{/publicidad}" class="btn btn-outline-secondary w-100 mt-auto">Ver promociones</a>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

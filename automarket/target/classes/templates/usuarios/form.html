@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/layout :: navbar(${activo})}"></nav>
+<main class="container mt-5 mb-5 flex-grow-1">
+    <h1 class="h3 mb-4 fw-bold" th:text="${titulo}">Colaborador</h1>
+    <div class="row"><div class="col-12 col-md-8 col-lg-6">
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+        <form th:action="@{${accion}}" th:object="${usuario}" method="post">
+            <div class="mb-3" th:unless="${modoCrear}">
+                <label class="form-label text-muted small fw-bold">ID del sistema</label>
+                <input type="text" class="form-control" th:value="${usuario.codigo}" disabled style="background-color: #e9ecef;">
+            </div>
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre completo</label>
+                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" placeholder="Nombre completo" required>
+            </div>
+            <div class="mb-3">
+                <label for="correo" class="form-label">Correo corporativo</label>
+                <input type="email" class="form-control" id="correo" th:field="*{correo}" placeholder="EMP-0000@automarket.pe" required>
+            </div>
+            <div class="mb-3">
+                <label for="rol" class="form-label">Rol del sistema</label>
+                <select class="form-select" id="rol" th:field="*{rol}">
+                    <option value="Cajero">Cajero</option>
+                    <option value="Supervisor">Supervisor</option>
+                </select>
+            </div>
+            <div class="mb-4" th:if="${modoCrear}">
+                <label for="password" class="form-label">Contraseña temporal</label>
+                <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Mínimo 4 caracteres">
+                <div class="form-text">El ID (EMP-xxxx / SUP-xxxx) se genera automáticamente según el rol.</div>
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="${boton}">Guardar</button>
+            <a th:href="@{/usuarios}" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div></div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

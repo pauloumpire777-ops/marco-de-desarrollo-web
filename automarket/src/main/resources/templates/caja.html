@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Caja rápida')}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/layout :: navbar(${activo})}"></nav>
+<main class="container mt-5 mb-5 flex-grow-1">
+    <div th:replace="~{fragments/layout :: alertas}"></div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold h2 mb-0">Terminal de autopago</h1>
+            <p class="text-muted small mb-0">Caja #01 · Operativa</p>
+        </div>
+        <span class="badge" style="background-color: var(--bs-secondary); font-size: .9rem;" th:text="${turno}">Turno</span>
+    </div>
+
+    <div class="row g-4">
+        <!-- Escaneo -->
+        <div class="col-12 col-lg-4">
+            <div class="card h-100 shadow-sm"><div class="card-body p-4">
+                <h2 class="h5 fw-bold mb-4">Escanear artículo</h2>
+                <form th:action="@{/caja/agregar}" method="post">
+                    <div class="mb-3">
+                        <label for="codigo" class="form-label text-muted small fw-bold">Código de barras</label>
+                        <input type="text" class="form-control form-control-lg" id="codigo" name="codigo" placeholder="Ej. 7750001" autofocus required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="cantidad" class="form-label text-muted small fw-bold">Cantidad</label>
+                        <input type="number" class="form-control" id="cantidad" name="cantidad" value="1" min="1">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Añadir al carrito</button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalCatalogo">Búsqueda manual</button>
+                    </div>
+                </form>
+            </div></div>
+        </div>
+
+        <!-- Detalle -->
+        <div class="col-12 col-lg-8">
+            <div class="card h-100 shadow-sm"><div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-bold mb-0">Detalle de compra</h2>
+                    <form th:unless="${carrito.vacio}" th:action="@{/caja/vaciar}" method="post" class="inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Vaciar carrito</button>
+                    </form>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead><tr>
+                            <th class="border-0">Producto</th><th class="border-0 text-center">Cant.</th>
+                            <th class="border-0 text-end">Precio unit.</th><th class="border-0 text-end">Importe</th><th class="border-0"></th>
+                        </tr></thead>
+                        <tbody>
+                            <tr th:each="it : ${carrito.items}">
+                                <td>
+                                    <div class="fw-bold" th:text="${it.producto.nombre}">Producto</div>
+                                    <div class="small text-muted">SKU: <span th:text="${it.producto.codigo}">0</span></div>
+                                </td>
+                                <td class="text-center text-nowrap">
+                                    <form th:action="@{/caja/restar}" method="post" class="inline"><input type="hidden" name="codigo" th:value="${it.producto.codigo}"><button class="btn btn-sm btn-outline-secondary btn-qty" aria-label="Restar una unidad">−</button></form>
+                                    <span class="mx-2 fw-bold" th:text="${it.cantidad}">1</span>
+                                    <form th:action="@{/caja/agregar}" method="post" class="inline"><input type="hidden" name="codigo" th:value="${it.producto.codigo}"><input type="hidden" name="cantidad" value="1"><button class="btn btn-sm btn-outline-secondary btn-qty" aria-label="Sumar una unidad">+</button></form>
+                                </td>
+                                <td class="text-end" th:text="'S/ ' + ${#numbers.formatDecimal(it.producto.precio,1,'COMMA',2,'POINT')}">S/ 0.00</td>
+                                <td class="text-end fw-bold" th:text="'S/ ' + ${#numbers.formatDecimal(it.importe,1,'COMMA',2,'POINT')}">S/ 0.00</td>
+                                <td class="text-end">
+                                    <form th:action="@{/caja/quitar}" method="post" class="inline"><input type="hidden" name="codigo" th:value="${it.producto.codigo}"><button class="btn btn-sm btn-outline-danger btn-qty" aria-label="Quitar del carrito">✕</button></form>
+                                </td>
+                            </tr>
+                            <tr th:if="${carrito.vacio}"><td colspan="5" class="text-center text-muted py-4">El carrito está vacío. Escanee un código o use la búsqueda manual.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <hr class="my-4" style="border-top: 2px dashed #dee2e6;">
+                <div class="d-flex justify-content-between align-items-end">
+                    <button type="button" class="btn btn-danger btn-lg px-5" data-bs-toggle="modal" data-bs-target="#modalPago" th:disabled="${carrito.vacio}">Finalizar compra</button>
+                    <div class="text-end">
+                        <p class="text-muted mb-0 small">Total a pagar</p>
+                        <h2 class="fw-bold mb-0 text-primary" th:text="'S/ ' + ${#numbers.formatDecimal(carrito.total,1,'COMMA',2,'POINT')}">S/ 0.00</h2>
+                    </div>
+                </div>
+            </div></div>
+        </div>
+    </div>
+</main>
+
+<!-- Catálogo manual (solo productos vendibles con stock: RN-02) -->
+<div class="modal fade" id="modalCatalogo" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content border-0 shadow">
+        <div class="modal-header border-0 bg-light">
+            <h5 class="modal-title fw-bold">Catálogo de productos</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4"><div class="row g-3">
+            <div class="col-6 col-md-4" th:each="p : ${catalogo}">
+                <div class="card text-center border"><div class="card-body p-3">
+                    <div class="catalogo-emoji mb-2" th:text="${categoriasMap.get(p.categoriaId).icono}">📦</div>
+                    <h6 class="fw-bold mb-1" th:text="${p.nombre}">Producto</h6>
+                    <p class="text-primary fw-bold mb-1" th:text="'S/ ' + ${#numbers.formatDecimal(p.precio,1,'COMMA',2,'POINT')}">S/ 0.00</p>
+                    <p class="text-muted small mb-2">Stock: <span th:text="${p.stock}">0</span></p>
+                    <form th:action="@{/caja/agregar}" method="post">
+                        <input type="hidden" name="codigo" th:value="${p.codigo}"><input type="hidden" name="cantidad" value="1">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary w-100">Agregar</button>
+                    </form>
+                </div></div>
+            </div>
+            <div class="col-12 text-center text-muted" th:if="${#lists.isEmpty(catalogo)}">No hay productos disponibles para la venta.</div>
+        </div></div>
+    </div></div>
+</div>
+
+<!-- Método de pago -->
+<div class="modal fade" id="modalPago" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content border-0 shadow">
+        <div class="modal-header border-0 bg-light">
+            <h5 class="modal-title fw-bold">Seleccione el método de pago</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4 text-center">
+            <p class="text-muted mb-4">Monto total a cancelar: <span class="fw-bold text-dark" th:text="'S/ ' + ${#numbers.formatDecimal(carrito.total,1,'COMMA',2,'POINT')}">S/ 0.00</span></p>
+            <form th:action="@{/caja/pagar}" method="post" class="d-grid gap-3">
+                <button type="submit" name="metodo" value="Tarjeta de crédito o débito" class="btn border py-3 fw-bold text-dark">💳 Tarjeta de crédito o débito</button>
+                <button type="submit" name="metodo" value="Google Pay" class="btn border py-3 fw-bold text-dark">📱 Google Pay</button>
+                <button type="submit" name="metodo" value="Yape" class="btn border py-3 fw-bold text-dark">🟣 Yape</button>
+            </form>
+        </div>
+    </div></div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

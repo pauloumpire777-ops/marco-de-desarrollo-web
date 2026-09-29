@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Boleta de venta')}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/layout :: navbar(${activo})}"></nav>
+<main class="container flex-grow-1">
+    <div class="row justify-content-center align-items-center" style="min-height: 75vh;">
+        <div class="col-12 col-sm-8 col-md-6 col-lg-5">
+            <div class="card shadow"><div class="card-body p-4 text-center">
+                <h1 class="h5 text-success mb-1">¡Venta exitosa!</h1>
+                <p class="text-muted mb-0">Minimarket Autopago</p>
+                <p class="text-muted small mb-3">
+                    Boleta B001-<span th:text="${#numbers.formatInteger(venta.id,6)}">000001</span> ·
+                    <span th:text="${#temporals.format(venta.fecha,'dd/MM/yyyy HH:mm')}">fecha</span>
+                </p>
+                <hr>
+                <table class="table table-borderless mb-0"><tbody>
+                    <tr th:each="i : ${venta.items}">
+                        <td class="text-start"><span th:text="${i.nombre}">Producto</span> × <span th:text="${i.cantidad}">1</span></td>
+                        <td class="text-end" th:text="'S/ ' + ${#numbers.formatDecimal(i.importe,1,'COMMA',2,'POINT')}">S/ 0.00</td>
+                    </tr>
+                </tbody></table>
+                <hr>
+                <div class="d-flex justify-content-between fw-bold mb-3">
+                    <span>Total</span>
+                    <span th:text="'S/ ' + ${#numbers.formatDecimal(venta.total,1,'COMMA',2,'POINT')}">S/ 0.00</span>
+                </div>
+                <p class="text-muted small mb-1">Pago: <span th:text="${venta.metodo}">método</span> · Atendió: <span th:text="${venta.cajero}">cajero</span></p>
+                <p class="text-muted small mb-4">Gracias por su compra</p>
+                <a th:href="@{/caja}" class="btn btn-primary">Nueva venta</a>
+            </div></div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

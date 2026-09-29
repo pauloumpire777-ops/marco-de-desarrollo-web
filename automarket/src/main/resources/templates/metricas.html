@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Analítica')}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/layout :: navbar(${activo})}"></nav>
+<main class="container mt-5 mb-5 flex-grow-1">
+    <h1 class="h3 fw-bold mb-1">Dashboard de analítica</h1>
+    <p class="text-muted small mb-4">Datos históricos simulados más las ventas reales hechas en la caja durante esta ejecución.</p>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6"><div class="card p-3"><div class="text-muted small">Tickets de esta sesión</div><div class="kpi-valor" th:text="${ticketsReales}">0</div></div></div>
+        <div class="col-6"><div class="card p-3"><div class="text-muted small">Ingresos de esta sesión</div><div class="kpi-valor" th:text="'S/ ' + ${#numbers.formatDecimal(ingresosReales,1,'COMMA',2,'POINT')}">S/ 0.00</div></div></div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-md-6"><div class="card h-100"><div class="card-body p-4">
+            <h2 class="h6 fw-bold text-muted mb-3">Ventas (S/) de los últimos 8 meses</h2>
+            <div class="chart-box"><canvas id="cVentas"></canvas></div>
+        </div></div></div>
+        <div class="col-12 col-md-6"><div class="card h-100"><div class="card-body p-4">
+            <h2 class="h6 fw-bold text-muted mb-3">Afluencia por día de la semana</h2>
+            <div class="chart-box"><canvas id="cAfluencia"></canvas></div>
+        </div></div></div>
+        <div class="col-12 col-md-6"><div class="card h-100"><div class="card-body p-4">
+            <h2 class="h6 fw-bold text-muted mb-3">Top 5 productos más vendidos (unidades)</h2>
+            <div class="chart-box"><canvas id="cTop"></canvas></div>
+        </div></div></div>
+        <div class="col-12 col-md-6"><div class="card h-100"><div class="card-body p-4">
+            <h2 class="h6 fw-bold text-muted mb-3">Tiempo promedio por transacción (segundos)</h2>
+            <div class="chart-box"><canvas id="cTiempo"></canvas></div>
+        </div></div></div>
+        <div class="col-12 col-md-6 mx-auto"><div class="card h-100"><div class="card-body p-4">
+            <h2 class="h6 fw-bold text-muted mb-3 text-center">Categorías populares del semestre</h2>
+            <div class="chart-box"><canvas id="cCategorias"></canvas></div>
+        </div></div></div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script th:inline="javascript">
+    const PRIMARIO = '#36C9C6', SECUNDARIO = '#9BC1BC', ALERTA = '#ED6A5A', OSCURO = '#2C3E50', AMARILLO = '#E8C468';
+    const opciones = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+
+    new Chart(document.getElementById('cVentas'), {
+        type: 'line',
+        data: { labels: /*[[${meses}]]*/ [], datasets: [{ data: /*[[${ventasMeses}]]*/ [], borderColor: PRIMARIO,
+                backgroundColor: 'rgba(54,201,198,.15)', fill: true, tension: .3 }] },
+        options: opciones
+    });
+    new Chart(document.getElementById('cAfluencia'), {
+        type: 'bar',
+        data: { labels: /*[[${dias}]]*/ [], datasets: [{ data: /*[[${afluencia}]]*/ [], backgroundColor: SECUNDARIO }] },
+        options: opciones
+    });
+    new Chart(document.getElementById('cTop'), {
+        type: 'bar',
+        data: { labels: /*[[${topNombres}]]*/ [], datasets: [{ data: /*[[${topValores}]]*/ [], backgroundColor: PRIMARIO }] },
+        options: Object.assign({ indexAxis: 'y' }, opciones)
+    });
+    new Chart(document.getElementById('cTiempo'), {
+        type: 'line',
+        data: { labels: /*[[${meses}]]*/ [], datasets: [{ data: /*[[${tiempos}]]*/ [], borderColor: ALERTA,
+                backgroundColor: 'rgba(237,106,90,.12)', fill: true, tension: .3 }] },
+        options: opciones
+    });
+    new Chart(document.getElementById('cCategorias'), {
+        type: 'doughnut',
+        data: { labels: /*[[${catNombres}]]*/ [], datasets: [{ data: /*[[${catValores}]]*/ [],
+                backgroundColor: [PRIMARIO, ALERTA, SECUNDARIO, OSCURO, AMARILLO, '#B08BBB'] }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/layout :: navbar(${activo})}"></nav>
+<main class="container mt-5 mb-5 flex-grow-1">
+    <h1 class="h3 mb-4 fw-bold" th:text="${titulo}">Producto</h1>
+    <div class="row"><div class="col-12 col-md-8 col-lg-6">
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+        <form th:action="@{${accion}}" th:object="${producto}" method="post">
+            <div class="mb-3">
+                <label for="codigo" class="form-label">Código de barras</label>
+                <input type="text" class="form-control" id="codigo" th:field="*{codigo}" placeholder="Ej. 7750001" required>
+            </div>
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" placeholder="Ej. Coca Cola 500ml" required>
+            </div>
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label for="precio" class="form-label">Precio (S/)</label>
+                    <input type="number" class="form-control" id="precio" th:field="*{precio}" placeholder="0.00" step="0.10" min="0.01" required>
+                </div>
+                <div class="col-6 mb-3">
+                    <label for="stock" class="form-label">Stock</label>
+                    <input type="number" class="form-control" id="stock" th:field="*{stock}" placeholder="0" min="0" required>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label for="categoriaId" class="form-label">Categoría</label>
+                <select class="form-select" id="categoriaId" th:field="*{categoriaId}" required>
+                    <option value="">Seleccione una categoría</option>
+                    <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.icono + ' ' + c.nombre}"></option>
+                </select>
+                <div class="form-text">Solo se listan categorías activas (RN-02).</div>
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="${boton}">Guardar</button>
+            <a th:href="@{/productos}" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div></div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Acceso al Sistema')}"></head>
+<body style="background: linear-gradient(135deg, #2C3E50 0%, #36C9C6 100%) fixed;">
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="card w-100 overflow-hidden" style="max-width: 900px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,.2);">
+        <div class="row g-0">
+            <div class="col-md-6 d-none d-md-flex flex-column justify-content-center align-items-center p-5 text-center text-white"
+                 style="background: linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.75)), #2C3E50;">
+                <div style="font-size: 4rem;">🛒</div>
+                <h1 class="fw-bold mb-3">AutoMarket</h1>
+                <p class="lead fw-medium mb-0">Plataforma de Gestión y Autopago</p>
+                <p class="small opacity-75 mt-4">2026</p>
+            </div>
+            <div class="col-md-6 p-5 bg-white">
+                <div class="mb-4 text-center text-md-start">
+                    <h3 class="fw-bold mb-1">Bienvenido de vuelta</h3>
+                    <p class="text-muted">Ingrese sus credenciales de acceso</p>
+                </div>
+                <div th:if="${error}" class="alert alert-danger py-2 small" th:text="${error}"></div>
+                <form th:action="@{/login}" method="post">
+                    <div class="mb-3">
+                        <label for="codigo" class="form-label fw-medium text-muted small">ID de colaborador</label>
+                        <input type="text" class="form-control bg-light" id="codigo" name="codigo" th:value="${codigo}" placeholder="EMP-0001" required autofocus>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-medium text-muted small">Contraseña</label>
+                        <input type="password" class="form-control bg-light" id="password" name="password" placeholder="••••••••" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Ingresar al sistema</button>
+                    </div>
+                </form>
+                <div class="mt-4 small text-muted border-top pt-3">
+                    <div class="fw-semibold mb-1">Cuentas de demostración (clave 1234)</div>
+                    <div><code>SUP-0001</code> Supervisor: acceso total</div>
+                    <div><code>EMP-0001</code> Cajero: sin Personal ni Analítica</div>
+                    <div><code>EMP-0003</code> Cajero suspendido: acceso denegado</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

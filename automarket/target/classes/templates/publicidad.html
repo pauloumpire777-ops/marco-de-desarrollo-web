@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Promociones')}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/layout :: navbar(${activo})}"></nav>
+<main class="container mt-5 mb-5 flex-grow-1">
+    <h1 class="h3 fw-bold mb-4">Promociones activas</h1>
+    <div class="card shadow-sm overflow-hidden">
+        <div id="carouselPublicidad" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" th:each="p, st : ${promos}" data-bs-target="#carouselPublicidad"
+                        th:attr="data-bs-slide-to=${st.index}" th:classappend="${st.first} ? 'active'" aria-label="Promoción"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item" th:each="p, st : ${promos}" th:classappend="${st.first} ? 'active'">
+                    <div class="promo-slide text-white text-center px-5" th:style="'background:' + ${p[3]}">
+                        <div>
+                            <div class="promo-emoji" th:text="${p[2]}">🥤</div>
+                            <h2 class="fw-bold mt-3" th:text="${p[0]}">Promoción</h2>
+                            <p class="fs-5 mb-0" th:text="${p[1]}">Detalle</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselPublicidad" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span><span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselPublicidad" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span><span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

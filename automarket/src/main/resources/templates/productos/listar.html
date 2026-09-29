@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Inventario')}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/layout :: navbar(${activo})}"></nav>
+<main class="container mt-5 mb-5 flex-grow-1">
+    <div class="row justify-content-center"><div class="col-12 col-lg-11">
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h3 mb-0 fw-bold">Gestión de inventario</h1>
+            <a th:href="@{/productos/nuevo}" class="btn btn-primary shadow-sm">Registrar producto</a>
+        </div>
+        <form th:action="@{/productos}" method="get" class="row g-2 mb-3">
+            <div class="col-12 col-md-6"><input type="search" name="q" th:value="${q}" class="form-control" placeholder="Buscar por nombre o código de barras"></div>
+            <div class="col-8 col-md-4">
+                <select name="categoria" class="form-select">
+                    <option value="">Todas las categorías</option>
+                    <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.icono + ' ' + c.nombre}" th:selected="${c.id == categoriaSel}"></option>
+                </select>
+            </div>
+            <div class="col-4 col-md-2 d-grid"><button type="submit" class="btn btn-outline-secondary">Filtrar</button></div>
+        </form>
+        <div class="card shadow-sm"><div class="card-body p-0"><div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead><tr>
+                    <th class="ps-4 py-3 border-0">Código</th><th class="py-3 border-0">Artículo</th>
+                    <th class="py-3 border-0">Categoría</th><th class="py-3 border-0">Precio unit.</th>
+                    <th class="py-3 border-0 text-center">Stock</th><th class="py-3 border-0 text-center">Estado</th>
+                    <th class="text-center py-3 border-0">Acciones</th>
+                </tr></thead>
+                <tbody>
+                    <tr th:each="p : ${productos}">
+                        <td class="ps-4 text-muted small" th:text="${p.codigo}">7750001</td>
+                        <td class="fw-medium" th:text="${p.nombre}">Producto</td>
+                        <td class="text-muted" th:text="${categoriasMap.get(p.categoriaId).nombre}">Categoría</td>
+                        <td class="fw-bold text-success" th:text="'S/ ' + ${#numbers.formatDecimal(p.precio,1,'COMMA',2,'POINT')}">S/ 0.00</td>
+                        <td class="text-center" th:classappend="${p.stock <= 15} ? 'text-danger fw-bold'" th:text="${p.stock}">0</td>
+                        <td class="text-center">
+                            <span th:if="${p.activo}" class="badge bg-success bg-opacity-10 text-success border border-success">Activo</span>
+                            <span th:unless="${p.activo}" class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary">Oculto</span>
+                        </td>
+                        <td class="text-center">
+                            <a th:href="@{/productos/{id}/editar(id=${p.id})}" class="btn btn-sm btn-outline-secondary fw-bold">Editar</a>
+                            <a th:if="${p.activo}" th:href="@{/productos/{id}/desactivar(id=${p.id})}" class="btn btn-sm btn-outline-danger fw-bold">Ocultar</a>
+                            <form th:unless="${p.activo}" th:action="@{/productos/{id}/activar(id=${p.id})}" method="post" class="inline">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary fw-bold">Reactivar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(productos)}"><td colspan="7" class="text-center text-muted py-4">Sin resultados. Pruebe otro filtro o registre un producto.</td></tr>
+                </tbody>
+            </table>
+        </div></div></div>
+    </div></div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

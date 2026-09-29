@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Soporte técnico')}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/layout :: navbar(${activo})}"></nav>
+<main class="container mt-5 mb-5 flex-grow-1">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-5">
+            <div th:replace="~{fragments/layout :: alertas}"></div>
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h1 class="h4 fw-bold">Soporte técnico</h1>
+                        <p class="text-muted small">Genere un ticket de asistencia para el sistema.</p>
+                    </div>
+                    <form th:action="@{/contacto}" method="post">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label fw-semibold text-muted small">Nombre del colaborador</label>
+                            <input type="text" class="form-control bg-light" id="nombre" name="nombre" th:value="${usuarioActual.nombre}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="correo" class="form-label fw-semibold text-muted small">Correo corporativo</label>
+                            <input type="email" class="form-control bg-light" id="correo" name="correo" th:value="${usuarioActual.correo}" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="detalle" class="form-label fw-semibold text-muted small">Detalle del incidente</label>
+                            <textarea class="form-control bg-light" id="detalle" name="detalle" rows="4" placeholder="Describa el problema de forma clara..." required></textarea>
+                        </div>
+                        <div class="d-grid"><button type="submit" class="btn btn-primary py-2">Enviar solicitud</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

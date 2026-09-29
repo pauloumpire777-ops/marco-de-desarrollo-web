@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${titulo})}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/layout :: navbar(${activo})}"></nav>
+<main class="container mt-5 mb-5 flex-grow-1">
+    <h1 class="h3 mb-4 fw-bold" th:text="${titulo}">Categoría</h1>
+    <div class="row"><div class="col-12 col-md-8 col-lg-6">
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+        <form th:action="@{${accion}}" th:object="${categoria}" method="post">
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" placeholder="Ej. Bebidas" required>
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="3" placeholder="Breve descripción de la categoría"></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="icono" class="form-label">Ícono</label>
+                <select class="form-select" id="icono" th:field="*{icono}">
+                    <option th:each="i : ${iconos}" th:value="${i}" th:text="${i}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="${boton}">Guardar</button>
+            <a th:href="@{/categorias}" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+    </div></div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
